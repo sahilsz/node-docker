@@ -128,3 +128,30 @@ So to prevent this we can create a **read-only bind mount** which means the dock
 
 `docker run -d -p 3000:3000 -v ${pwd}:/app:ro -v /app/node_modules --name node-app node-app-image`
 ro - Read Only
+
+## Environment Variables
+
+Passing env variables in the Dockerfile
+
+```dockerfile
+FROM node:18
+WORKDIR /app
+COPY package.json .
+RUN npm install
+COPY . /app/
+ENV PORT=3000
+EXPOSE 3000
+CMD ["npm", "run", "dev"]
+```
+
+Passing env variable in the command line
+`docker -d -p 3000:4000 -e PORT=4000 --name node-app node-app-image`
+
+Passing env variables from an .env file
+`touch env`
+`docker -d -p 3000:3000 --env-file ./.env --name node-app node-app-image`
+
+**So whenever we delete a container it preserves the volume because of the volume mounts.**
+TO list volumes: `docker volumes ls`
+To delete all volumes: `docker volumes prune`
+To delete the volume as we delete the container: `docker rm node-app -fv`
