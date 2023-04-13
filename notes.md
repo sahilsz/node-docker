@@ -155,3 +155,31 @@ Passing env variables from an .env file
 TO list volumes: `docker volumes ls`
 To delete all volumes: `docker volumes prune`
 To delete the volume as we delete the container: `docker rm node-app -fv`
+
+## Docker Compose
+
+Docker Compose is a tool that help us define and share multi container applications. With compose we can create a Yaml file to define all the services that have all the steps and configuration and with a single command we can spin everything up or tear it all down.
+`touch docker-compose.yaml`
+
+docker-compose.yml
+
+```yaml
+version: "3"
+services:
+  node-app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    # environment: PORT=3000
+    env_file: ./.env
+```
+
+Running our container
+`docker-compose up -d`
+`docker-compose down -v`
+
+Even we make some changes in the Dockerfile docker-compose doesn't make a new image and its not intelligent enough to now theres any change or not. So we have to force docker compose to build new image by passing the --build tag
+`docker-compose up -d --build`
