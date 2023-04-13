@@ -183,3 +183,66 @@ Running our container
 
 Even we make some changes in the Dockerfile docker-compose doesn't make a new image and its not intelligent enough to now theres any change or not. So we have to force docker compose to build new image by passing the --build tag
 `docker-compose up -d --build`
+
+## Set up docker-compose file to have separate set of commands for production and separate commands for production
+
+**Some people recommend not using the npm command within the container because it's just another layer between node and the container. So for production you may want to run `node index.js` instead of npm start.**
+
+So we can create different docker files and docker-compose.yaml files, so you could have one for production and another for development. And some uses one file for both.
+
+Using one docker file for base configuration and other for development and production.
+`docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d`
+This is going to load all the configuration from the base file i.e. docker-compose.yaml and the load all the configuration from the docker-compose.dev.yaml file and if it needs to it'll overwrite any of the configuration it's been set to.
+
+`docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml down -v`
+
+**Npm to not install dev dependency we do `npm install --only=production`.**
+
+To let Dockerfile know which env image to build we have to write an embedded bash script in Dockerfile.
+
+```dockerfile
+FROM node:18
+WORKDIR /app
+COPY package.json
+ARG NODE_ENV
+RUN if [ "$NODE_ENV" = "development" ]; \
+        then npm install; \
+        else npm install --only=production; \
+        fi
+COPY . /app/
+EXPOSE 3000
+CMD ["node", "index.js"]
+```
+
+SO here we are referencing $NODE_ENV variable which we have to pass in. So this is an argument that gets passed into our docker file when it's building our docker image and we have to set this value in our docker-compose.yaml file.
+
+```yaml
+# docker-compose.dev.yaml
+version: "3"
+services:
+  node-app:
+    build:
+      context: .
+      args:
+        NODE_ENV: development
+    volumes:
+      - ./:/app
+      - /app/node-modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+```
+
+```yaml
+# docker-compose.prod.yaml
+version: "3"
+services:
+  node-app:
+    build:
+      context: .
+      args:
+        NODE_ENV: production
+    environment:
+      - NODE_ENV=production
+    command: node index.js
+```
