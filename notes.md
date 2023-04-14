@@ -192,7 +192,7 @@ So we can create different docker files and docker-compose.yaml files, so you co
 
 Using one docker file for base configuration and other for development and production.
 `docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d`
-This is going to load all the configuration from the base file i.e. docker-compose.yaml and the load all the configuration from the docker-compose.dev.yaml file and if it needs to it'll overwrite any of the configuration it's been set to.
+This is going to load all the configuration from the base file i.e. docker-compose.yaml and then load all the configuration from the docker-compose.dev.yaml file and if it needs to it'll overwrite any of the configuration it's been set to.
 
 `docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml down -v`
 
@@ -250,7 +250,8 @@ services:
 ## Adding mongo container
 
 ```yaml
-# This file will contian shared configuration.
+# docker-compose.yaml
+# This file will contain shared configuration.
 version: "3"
 services:
   node-app:
@@ -275,7 +276,7 @@ services:
 ### Connect to mongo container
 
 `docker exec -it node-docker-mongo-1 bash`
-`docker exec -it node-docker-mongo-1 mongosh -u 'username' -p 'password'
+`docker exec -it node-docker-mongo-1 mongosh -u 'username' -p 'password`
 
 Since we are in the container so we can actually connect to the mongo.
 
@@ -309,4 +310,29 @@ So when it comes to named volumes we have to declare this volume in other portio
 ```yaml
 volumes:
   mongo-db:
+```
+
+## Connecting express app to mongodb
+
+`npm install mongoose`
+
+```js
+# index.js
+const express = require("express");
+const mongoose = require("mongoose");
+
+mongoose
+	.connect("mongodb://darq:1324@172.18.0.2:27017/?authSource=admin")
+	.then(() => console.log("Successfully connected to db."))
+	.catch((e) => console.log(e));
+
+const app = express();
+
+app.get("/", (req, res) => {
+	res.send("<h2>Hi There &#9995</h2>");
+});
+
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => console.log(`listening on port ${port}`));
 ```
