@@ -336,3 +336,12 @@ const port = process.env.PORT || 3000;
 
 app.listen(port, () => console.log(`listening on port ${port}`));
 ```
+
+### Connecting containers using their service name
+
+Docker allows containers to talk to other containers within same networks. And with custom networks we have DNS. So when one docker container wants to talk to another docker container we can use the name of that container or name of that service to talk to that container.
+
+So uri could be changed to `mongodb://username:password@containerName/?authSource=admin`
+
+To follow the containers log `docker logs container_name -f`
+Inspect network properties `docker network inspect network_name`

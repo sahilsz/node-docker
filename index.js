@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 mongoose
-	.connect("mongodb://darq:1324@172.18.0.2:27017/?authSource=admin")
+	.connect("mongodb://darq:1324@mongo:27017/?authSource=admin")
 	.then(() => console.log("Successfully connected to db."))
 	.catch((e) => console.log(e));
 
