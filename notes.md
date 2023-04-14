@@ -345,3 +345,38 @@ So uri could be changed to `mongodb://username:password@containerName/?authSourc
 
 To follow the containers log `docker logs container_name -f`
 Inspect network properties `docker network inspect network_name`
+
+## ENV variables
+
+We are going to create a module called config.js which is going to export a variable that's going to store all our ENV variables.
+
+```js
+# config/config.js
+module.exports = {
+  MONGO_IP: process.env.MONGO_IP || "mongo",
+  MONGO_PORT: process.env.MONGO_PORT || 27017,
+  MONGO_USERNAME: process.env.MONGO_USERNAME,
+  MONGO_PASSWORD: process.env.MONGO_PASSWORD,
+}
+
+# index.js
+const {
+	MONGO_USERNAME,
+	MONGO_PASSWORD,
+	MONGO_IP,
+	MONGO_PORT,
+} = require("./config/config");
+
+mongoose
+	.connect(
+		`mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}/?authSource=admin`
+	)
+	.then(() => console.log("Successfully connected to db."))
+	.catch((e) => console.log(e));
+
+# UPDATE docker-compose.dev.yml
+environment:
+      - NODE_ENV=development
+      - MONGO_USERNAME=darq
+      - MONGO_PASSWORD=1324
+```
