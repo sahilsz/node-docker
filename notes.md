@@ -246,3 +246,67 @@ services:
       - NODE_ENV=production
     command: node index.js
 ```
+
+## Adding mongo container
+
+```yaml
+# This file will contian shared configuration.
+version: "3"
+services:
+  node-app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    # env_file: ./.env
+
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=darq
+      - MONGO_INITDB_ROOT_PASSWORD=1324
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-db:data/db
+```
+
+### Connect to mongo container
+
+`docker exec -it node-docker-mongo-1 bash`
+`docker exec -it node-docker-mongo-1 mongosh -u 'username' -p 'password'
+
+Since we are in the container so we can actually connect to the mongo.
+
+```bash
+mongosh # to open mongo shell
+mongosh -u 'username' -p 'password'  # to connect to mongodb as admin
+db  # to get the current database we connected to
+
+# we can create a new database using 'use'
+use mydb  # create new db called mydb
+
+show dbs  # to list all the databases
+# It will not list mydb because mongo won't list a database until we have a document or entry within that database
+
+mydb.books.insertOne({ "Name" : "Harry Potter" })  # inserts a new entry to books collection
+
+mydb.books.find()  # list all the entries in books collection
+```
+
+attaching named volume to mongodb to store db data
+
+```yaml
+volumes:
+  - mongo-db:/data/db
+```
+
+if we try to run it as it is then it will throw an error: 'ERROR: Named volume 'mongo-db:/data/db:rw' is used in service mongo but no declaration was found in the volume sections.
+
+So when it comes to named volumes we have to declare this volume in other portion of our docker compose file and that's because a named volume can be used by multiple services. e.g. we can attach another mongo service to the same exact volume.
+
+```yaml
+volumes:
+  mongo-db:
+```
