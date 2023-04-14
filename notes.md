@@ -380,3 +380,31 @@ environment:
       - MONGO_USERNAME=darq
       - MONGO_PASSWORD=1324
 ```
+
+## Communicating between containers
+
+So when it comes to starting our docker container using docker-compose we can end up in some potential issues. Such as when we spin up our both the container we don't actually know in which exact order these will spun up.
+It can throw an error if our node container spins up first then its going to try and connect to our database. However if our database is not up, it's going to throw an error and then crash our app.
+
+So we need a way to tell docker to load up our mongo container first so that we can ensure that when its up and running only then our node container connect to it.
+
+We can use `depends_on`.
+
+```yml
+version: "3"
+services:
+  node-app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    # env_file: ./.env
+    depends_on:
+      - mongo
+```
+
+**To start a specific service**
+`docker-compose -f docker-compose.yml up node-app`
+This will still start the mongo container because of depends_on. So to only start node-app
+`docker-compose -f docker-compose.yml up --no-deps node-app`
