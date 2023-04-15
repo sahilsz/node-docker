@@ -408,3 +408,28 @@ services:
 `docker-compose -f docker-compose.yml up node-app`
 This will still start the mongo container because of depends_on. So to only start node-app
 `docker-compose -f docker-compose.yml up --no-deps node-app`
+
+## Building a Blog application
+
+### Adding Models
+
+Create a mongoose schema to tell how our post should look like.
+If they don't include title, we'll throw an error and say post must have title.
+
+```js
+const mongoose = require("mongoose");
+
+const postSchema = new mongoose.Schema({
+	title: {
+		type: String,
+		require: [true, "Post must have title"],
+	},
+	body: {
+		type: String,
+		require: [true, "Post must have body"],
+	},
+});
+
+const Post = mongoose.model("Post", postSchema);
+module.exports = Post;
+```
