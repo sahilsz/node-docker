@@ -6,12 +6,13 @@ exports.getAllPosts = async (req, res, next) => {
 
 		res.status(200).json({
 			status: "success",
-			results: post.length,
+			results: posts.length,
 			data: {
 				posts,
 			},
 		});
 	} catch (e) {
+		console.log(e);
 		res.status(400).json({
 			status: "fail",
 		});

@@ -518,3 +518,36 @@ exports.deletePost = async (req, res, next) => {
 	}
 };
 ```
+
+### Routes
+
+```js
+const express = require("express");
+const postController = require("../controllers/postController");
+
+const router = express();
+
+router
+	.route("/")
+	.get(postController.getAllPosts)
+	.post(postController.createPost);
+
+router
+	.route("/:id")
+	.get(postController.getOnePost)
+	.patch(postController.updatePost)
+	.delete(postController.deletePost);
+
+module.exports = router;
+```
+
+Adding routes to index.js
+
+```js
+const postRouter = require("./routes/postRoutes");
+
+// middleware to read body
+app.use(express.json());
+
+app.use("/posts", postRouter);
+```
