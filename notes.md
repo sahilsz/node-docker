@@ -634,3 +634,34 @@ const userRouter = require("./routes/postRoutes");
 
 app.use("/users", userRouter);
 ```
+
+Hashing the password
+
+```js
+// controllers/authController.js
+const bcrypt = require("bcryptjs");
+
+exports.signUp = async (req, res, next) => {
+	const { username, password } = req.body;
+	const hashedPassword = await bcrypt.hash(password, 12);
+	// 12 is the salt length to generate, pass a value that is going to be the strength of the hash
+
+	try {
+		const newUser = await User.create({
+			username,
+			password: hashedPassword,
+		});
+		res.status(200).json({
+			status: "success",
+			data: {
+				user: newUser,
+			},
+		});
+	} catch (e) {
+		console.log(e);
+		res.status(400).json({
+			status: "fail",
+		});
+	}
+};
+```
