@@ -577,3 +577,60 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model("User", userSchema);
 module.exports = User;
 ```
+
+### Add user controllers
+
+```js
+// models/userModel.js
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema({
+	username: {
+		type: String,
+		required: [true, "User must have a username"],
+		unique: true,
+	},
+	password: {
+		type: String,
+		required: [true, "User must have a password"],
+		unique: true,
+	},
+});
+
+const User = mongoose.model("User", userSchema);
+module.exports = User;
+// controllers/authController.js
+const User = require("../models/userModel");
+
+exports.signUp = async (req, res, next) => {
+	try {
+		const newUser = await User.create(req.body);
+		res.status(200).json({
+			status: "success",
+			data: {
+				user: newUser,
+			},
+		});
+	} catch (e) {
+		console.log(e);
+		res.status(400).json({
+			status: "fail",
+		});
+	}
+};
+
+// routes/userRoutes.js
+const express = require("express");
+const authControllers = require("../controllers/authController");
+
+const router = express.Router();
+
+router.post("/signup", authControllers.signUp);
+
+module.exports = router;
+
+// index.js
+const userRouter = require("./routes/postRoutes");
+
+app.use("/users", userRouter);
+```

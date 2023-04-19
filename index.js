@@ -8,6 +8,7 @@ const {
 } = require("./config/config");
 
 const postRouter = require("./routes/postRoutes");
+const userRouter = require("./routes/userRoutes");
 
 const MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}/?authSource=admin`;
 
@@ -33,6 +34,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/posts", postRouter);
+
+app.use("/users", userRouter);
 
 const port = process.env.PORT || 3000;
 
