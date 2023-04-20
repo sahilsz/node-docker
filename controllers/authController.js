@@ -9,7 +9,7 @@ exports.signUp = async (req, res, next) => {
 			username,
 			password: hashedPassword,
 		});
-		req.session = newUser;
+		req.session.user = newUser;
 		res.status(200).json({
 			status: "success",
 			data: {
@@ -25,7 +25,6 @@ exports.signUp = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
 	const { username, password } = req.body;
-
 	try {
 		const user = await User.findOne({ username });
 		if (!user) {

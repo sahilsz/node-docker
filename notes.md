@@ -821,3 +821,38 @@ With this session created we can store information whatever we want into this se
 // add this to both the controller
 req.session = newUser;
 ```
+
+## Authorizing all the routes
+
+Using express middleware
+Middleware is nothing more than a function that runs your controller. This middleware is going to check that session object has user property attached to it and if there is user property then it will forward the req on to the controller, otherwise return failed status.
+
+```js
+// middleware/authMiddleware.js
+const protect = (req, res, next) => {
+	// destructuring the user
+	const { user } = req.session;
+
+	if (!user) {
+		return res.status(401).json({
+			status: "fail",
+			message: "unauthorized",
+		});
+	}
+
+	// optional
+	req.user = user;
+
+	next();
+};
+
+module.exports = protect;
+
+// routes/postRoutes.js
+const protect = require("../routes/postRoutes");
+
+router
+	.route("/")
+	.get(postController.getAllPosts)
+	.post(protect, postController.createPost);
+```
