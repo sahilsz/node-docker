@@ -957,3 +957,19 @@ server {
 ```
 
 index.js `app.enable("trust-proxy");
+
+**Scaling the express app**
+`docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --scale node-app=2`
+
+**Enabling CORS**
+CORS allows to run front-end on one domain and backend api to work on different domain because by default
+let's say your front end is hosted at www.google.com and your api is on yahoo.com, since both are different domains so by default our api will reject that request from our frontend. So to allow these to run on different domains we have to configure cors, so that different domains can access our api.
+
+`npm i cors`
+
+```js
+//index.js
+const cors = require("cors");
+
+app.use(cors());
+```

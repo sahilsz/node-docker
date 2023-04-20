@@ -10,6 +10,7 @@ const {
 	SESSION_SECRET,
 } = require("./config/config");
 
+const cors = require("cors");
 const redis = require("redis");
 const session = require("express-session");
 let RedisStore = require("connect-redis")(session);
@@ -39,6 +40,7 @@ connectMongo();
 const app = express();
 
 app.enable("trust-proxy");
+app.use(cors());
 
 app.use(
 	session({
@@ -57,6 +59,7 @@ app.use(
 app.use(express.json());
 
 app.get("/", (req, res) => {
+	console.log("yooo");
 	res.send("<h2>Hi There &#9995</h2>");
 });
 
