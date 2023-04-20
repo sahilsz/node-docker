@@ -705,3 +705,26 @@ exports.login = async (req, res, next) => {
 // routes/userRoutes.js
 router.post("/login", authControllers.login);
 ```
+
+## Handling authentication
+
+Here we are going to store the state when a user logins in our application using sessions.
+Implementing authentication in our application so that our user can signUp and login to be able to retrieve post, modify post or delete post.
+
+So there are two ways of handling authentication:
+
+- Sessions
+- JWT
+
+So we are going to use `express-session` package to implement session and we can add a redis database. We are going to use _redis database_ to store our sessions.
+
+### Adding redis database
+
+```yaml
+# docker-compose.yml
+
+# under mongo
+redis:
+  image: redis
+```
+
