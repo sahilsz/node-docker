@@ -739,3 +739,57 @@ earlier we used to docker-compose down and then docker-compose up --build to bui
 **We can also use docker-compose up --build on running container to build new image with new container added or new dependencies added.**
 But when we do docker-compose up --build on running container then our already running container is going to grab the old anonymous volume and our old anon volume has all of our dependencies and packages, So we need to force docker to use a new anonymous volume instead.
 `docker-compose up  -d --build -V`
+
+```js
+// docker-compose.dev.yml
+node-app:
+	environment:
+      - NODE_ENV=development
+      - MONGO_USERNAME=darq
+      - MONGO_PASSWORD=1324
+      - SESSION_SECRET=secret
+
+
+// config/config.js
+module.exports = {
+	MONGO_IP: process.env.MONGO_IP || "mongo",
+	MONGO_PORT: process.env.MONGO_PORT || 27017,
+	MONGO_USERNAME: process.env.MONGO_USERNAME,
+	MONGO_PASSWORD: process.env.MONGO_PASSWORD,
+	REDIS_URL: process.env.REDIS_URL || "redis",
+	REDIS_PORT: process.env.REDIS_PORT || 6379,
+	SESSION_SECRET: process.env.SESSION_SECRET,
+};
+
+// index.js
+const {
+	MONGO_USERNAME,
+	MONGO_PASSWORD,
+	MONGO_IP,
+	MONGO_PORT,
+	REDIS_URL,
+	REDIS_PORT,
+} = require("./config/config");
+
+const redis = require("redis");
+const session = require("express-session");
+let RedisStore = require("connect-redis")(session);
+let redisClient = redis.createClient({
+	host: REDIS_URL,
+	port: REDIS_PORT,
+});
+
+app.use(
+	session({
+		store: new RedisStore({ client: redisClient }),
+		secret: config.SESSION_SECRET,
+		cookie: {
+			secure: false,
+			resave: false,
+			saveUninitialized: false,
+			httpOnly: true,
+			maxAge: 30000,
+		},
+	})
+);
+```
