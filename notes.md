@@ -718,7 +718,7 @@ So there are two ways of handling authentication:
 
 So we are going to use `express-session` package to implement session and we can add a redis database. We are going to use _redis database_ to store our sessions.
 
-### Adding redis database
+### Adding redis container
 
 ```yaml
 # docker-compose.yml
@@ -728,7 +728,7 @@ redis:
   image: redis
 ```
 
-### Connecting to redis database
+### Initializing the connection with redis database to store sessions
 
 Installing the dependencies
 `npm install redis connect-redis@6.1.3 express-session`
