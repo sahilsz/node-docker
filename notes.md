@@ -856,3 +856,104 @@ router
 	.get(postController.getAllPosts)
 	.post(protect, postController.createPost);
 ```
+
+## Adding nginx
+
+```yaml
+# docker-compose.yml
+# This file will contian shared configuration.
+version: "3"
+services:
+  nginx:
+    image: nginx:stable-alpine
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+  node-app:
+    build: .
+    environment:
+      - PORT=3000
+    # env_file: ./.env
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=darq
+      - MONGO_INITDB_ROOT_PASSWORD=1324
+
+    volumes:
+      - mongo-db:/data/db
+
+  redis:
+    image: redis
+
+volumes:
+  mongo-db:
+
+# docker-compose.dev.yml
+version: "3"
+services:
+  nginx:
+    ports:
+      - "3000:80"
+  node-app:
+    build:
+      context: .
+      args:
+        NODE_ENV: development
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - MONGO_USERNAME=darq
+      - MONGO_PASSWORD=1324
+      - SESSION_SECRET=secret
+
+    command: npm run dev
+
+  mongo:
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=darq
+      - MONGO_INITDB_ROOT_PASSWORD=1324
+    ports:
+      - "27017:27017"
+
+# docker-compose.prod.yml
+version: "3"
+services:
+  nginx:
+    ports:
+      - "80:80"
+  node-app:
+    build:
+      context: .
+      args:
+        NODE_ENV: production
+    environment:
+      - NODE_ENV=production
+    command: node index.js
+```
+
+Nginx configuration
+
+```conf
+server {
+    listen 80;
+    # this is the location where we want to send the reques to
+    location / {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-NginX-Proxy true;
+
+        # here we specify the url of the servers that we want to proxy this traffic to
+        proxy_pass http://node-app:3000;
+        proxy_redirect off;
+    }
+}
+```
+
+index.js `app.enable("trust-proxy");
