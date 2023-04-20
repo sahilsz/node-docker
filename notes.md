@@ -731,7 +731,7 @@ redis:
 ### Initializing the connection with redis database to store sessions
 
 Installing the dependencies
-`npm install redis connect-redis@6.1.3 express-session`
+`npm install redis@3.1.2 connect-redis@6.1.3 express-session`
 
 Building new image with new dependencies
 earlier we used to docker-compose down and then docker-compose up --build to build a new image and then run the container.
@@ -792,4 +792,32 @@ app.use(
 		},
 	})
 );
+```
+
+### Creating a session when user login
+
+Connecting to redis database
+
+```bash
+docker exec -it node-docker-redis-1 bash
+or
+docker exec -it node-docker-redis-1 redis-cli
+redis-cli # this drops us into redis database
+
+# to see all the entries in redis database
+KEYS *
+
+# To get details about the keys
+GET "KEY" # sess:EUaxAJvvZvf5RDH_BeDNQBNSn4LUQJQR
+
+```
+
+### Adding information to the session
+
+With this session created we can store information whatever we want into this session. So what we want to do is when the user login we want to store user information within this session. That means if users information is in the session then user is logged in otherwise not logged in.
+
+```js
+// index.js
+// add this to both the controller
+req.session = newUser;
 ```
