@@ -728,3 +728,14 @@ redis:
   image: redis
 ```
 
+### Connecting to redis database
+
+Installing the dependencies
+`npm install redis connect-redis@6.1.3 express-session`
+
+Building new image with new dependencies
+earlier we used to docker-compose down and then docker-compose up --build to build a new image and then run the container.
+
+**We can also use docker-compose up --build on running container to build new image with new container added or new dependencies added.**
+But when we do docker-compose up --build on running container then our already running container is going to grab the old anonymous volume and our old anon volume has all of our dependencies and packages, So we need to force docker to use a new anonymous volume instead.
+`docker-compose up  -d --build -V`
