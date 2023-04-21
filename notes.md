@@ -973,3 +973,44 @@ const cors = require("cors");
 
 app.use(cors());
 ```
+
+---
+
+## Deploying to Production
+
+Updating the production docker file to get the env variable from the system not hardcode the values.
+
+```yaml
+# docker-compose.prod.yml
+version: "3"
+services:
+  nginx:
+    ports:
+      - "80:80"
+  node-app:
+    build:
+      context: .
+      args:
+        NODE_ENV: production
+    environment:
+      - NODE_ENV=production
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - SESSION_SECRET=${SESSION_SECRET}
+    command: node index.js
+
+  mongo:
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+```
+
+### Set env variable on linux
+
+**Creating secret key: `openssl rand -hex 32`**
+export SESSION_SECRET=4150b909ffcb1cf739f31e7c89b54553fe4d138de5c19adf930a666275c6008a
+or
+create a file .env with all the env variables
+then vim .profile and add this command:
+`set -o allexport; source ~/.env; set -o allexport;`
+This is gonna loop through all of those environment variables and set those environment variables on this machine.
