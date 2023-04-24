@@ -1063,3 +1063,12 @@ pushing all the services:
 
 Pulling image from dockerhub
 `docker compose -f docker-compose.yml -f docker-compose.prod.yml pull`
+
+## WatchTower
+
+It is a special container that will automatically check dockerhub periodically for new image and whenever an image gets pushed it'll automatically pull it to your production server and restart your container with brand new image.
+
+`docker run -d --name watchtower -e WATCHTOWER_TRACE=true -e WATCHTOWER_DEBUG=true -e WATCHTOWER_POLL_INTERVAL=50 -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower node-docker-node-app`
+pass the container you want to check for.
+
+here 50 means 50 seconds.
