@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const {
-	MONGO_USERNAME,
+	MONGO_USER,
 	MONGO_PASSWORD,
 	MONGO_IP,
 	MONGO_PORT,
@@ -22,7 +22,7 @@ let redisClient = redis.createClient({
 const postRouter = require("./routes/postRoutes");
 const userRouter = require("./routes/userRoutes");
 ``;
-const MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}/?authSource=admin`;
+const MONGO_URL = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}/?authSource=admin`;
 
 const connectMongo = () => {
 	mongoose
