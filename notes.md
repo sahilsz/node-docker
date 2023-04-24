@@ -1014,3 +1014,18 @@ create a file .env with all the env variables
 then vim .profile and add this command:
 `set -o allexport; source ~/.env; set -o allexport;`
 This is gonna loop through all of those environment variables and set those environment variables on this machine.
+
+## Telling docker compose to only rebuild our node app and recreate the container
+
+`docker compose --env-file ~/.env -f docker-compose.yml -f docker-compose.prod.yml up -d --build node-app`
+It will still rebuild the dependencies which was set in docker-compose file with _depends_on_.
+
+To avoid rebuilding the dependencies:
+`docker compose --env-file ~/.env -f docker-compose.yml -f docker-compose.prod.yml up -d --build --no-deps node-app`
+
+**Force recreation**
+`docker compose --env-file ~/.env -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate node-app`
+Recreates containers even if their configuration and image haven't change.
+
+Our normal workflow:
+![Normal Workflow](meta/images/normal_workflow.png)
