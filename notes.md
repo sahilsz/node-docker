@@ -1029,3 +1029,37 @@ Recreates containers even if their configuration and image haven't change.
 
 Our normal workflow:
 ![Normal Workflow](meta/images/normal_workflow.png)
+
+## Improved Dockerhub workflow
+
+![Improved Workflow](meta/images/improved_dockerhub_workflow.png)
+
+### Pushing docker image to Dockerhub
+
+`docker login`
+`docker push node-docker-node-app` // this will throw an error because we can't upload an image with name like our current
+
+To change name:
+`docker image tag current_image_name username/updated_name`
+
+`docker push prototypid/docker-node`
+
+![dockerhub](meta/images/dockerhub-image-pushed.png)
+
+### Pushing changes to docker hub
+
+Rebuilding image
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml build`
+
+rebuilding specific service
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml build node-app`
+
+Pushing to docker hub
+pushing specific service:
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml node-app`
+
+pushing all the services:
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml`
+
+Pulling image from dockerhub
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml pull`
